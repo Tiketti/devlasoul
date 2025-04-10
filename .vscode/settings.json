@@ -1,0 +1,19 @@
+{
+	"editor.quickSuggestions": {
+		"strings": true
+	},
+	"tailwindCSS.experimental.classRegex": [],
+	"tailwindCSS.includeLanguages": {
+		"typescript": "javascript",
+		"typescriptreact": "javascript"
+	},
+	"editor.codeActionsOnSave": {
+		"source.sortImports.biome": "always"
+	},
+	"editor.defaultFormatter": "biomejs.biome",
+	"tailwindCSS.validate": true,
+	"tailwindCSS.suggestions": true,
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true,
+	"tailwindCSS.classAttributes": ["class", "className", "ngClass"]
+}
