@@ -52,5 +52,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --project-name=devlasoul.com
+          command: pages deploy dist --project-name=devlasoul.com
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
