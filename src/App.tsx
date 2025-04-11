@@ -6,7 +6,7 @@ function App() {
           DEV LA SOUL
         </h1>
         <h2 className="px-8 py-2 font-grandmaster text-2xl text-white/90 sm:text-2xl">
-          the stakes is high. so is the standard.
+          stakes is high. so is the standard.
           <br />
           <br />
           software development from the heart.
