@@ -17,6 +17,7 @@
     "generate:og": "tsx scripts/generate-og-image.ts"
   },
   "dependencies": {
+    "opentype.js": "^1.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

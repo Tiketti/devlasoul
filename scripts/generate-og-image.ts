@@ -1,6 +1,8 @@
-import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { readFile, mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import sharp from "sharp";
+import { load } from "opentype.js";
+import type { Font } from "opentype.js";
 
 type ExtractedContent = {
   title: string;
@@ -55,8 +57,47 @@ async function extractFromApp(): Promise<ExtractedContent> {
   return { title, titleSize, taglines, taglineSize };
 }
 
+async function textToPath(
+  text: string,
+  x: number,
+  y: number,
+  fontSize: string,
+  font: Font,
+): Promise<string> {
+  const size = Number.parseInt(fontSize, 10);
+  // First create the path at x=0 to measure it
+  const path = font.getPath(text, 0, y, size);
+  // Get the bounding box to calculate width
+  const bbox = path.getBoundingBox();
+  // Create new path with centered x position
+  const centeredPath = font.getPath(text, x - (bbox.x2 - bbox.x1) / 2, y, size);
+  return centeredPath.toSVG();
+}
+
 async function generate() {
   const { title, titleSize, taglines, taglineSize } = await extractFromApp();
+
+  // Load the font
+  const fontPath = join(process.cwd(), "public/fonts/grandmasterclash.otf");
+  // @ts-expect-error The type definition expects 3 args but the function only needs the path
+  const font = await load(fontPath);
+
+  // Convert text to paths
+  const titlePath = await textToPath(title, 600, 280, titleSize, font);
+  const tagline1Path = await textToPath(
+    taglines[0],
+    600,
+    380,
+    taglineSize,
+    font,
+  );
+  const tagline2Path = await textToPath(
+    taglines[1],
+    600,
+    440,
+    taglineSize,
+    font,
+  );
 
   const svgTemplate = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -74,32 +115,30 @@ async function generate() {
     <rect width="1200" height="630" fill="url(#gradient)" />
 
     <!-- Title -->
-    <text x="600" y="280" font-family="Grandmaster Clash" font-size="${titleSize}" fill="white" text-anchor="middle" filter="url(#shadow)">
-      ${title}
-    </text>
+    <g fill="white" filter="url(#shadow)">
+      ${titlePath}
+    </g>
     
     <!-- Taglines -->
-    <text x="600" y="380" font-family="Grandmaster Clash" font-size="${taglineSize}" fill="white" opacity="0.9" text-anchor="middle">
-      ${taglines[0]}
-    </text>
-    <text x="600" y="440" font-family="Grandmaster Clash" font-size="${taglineSize}" fill="white" opacity="0.9" text-anchor="middle">
-      ${taglines[1]}
-    </text>
+    <g fill="white" opacity="0.9">
+      ${tagline1Path}
+      ${tagline2Path}
+    </g>
   </svg>`;
 
   // Ensure public directory exists
   const publicDir = join(process.cwd(), "public");
   await mkdir(publicDir, { recursive: true });
 
-  // Write SVG file
   const svgPath = join(publicDir, "og-image.svg");
-  await writeFile(svgPath, svgTemplate);
+  const pngPath = join(publicDir, "og-image.png");
 
-  // Convert to PNG
-  await sharp(Buffer.from(svgTemplate))
-    .resize(1200, 630)
-    .png()
-    .toFile(join(publicDir, "og-image.png"));
+  // Remove existing files if they exist
+  await Promise.all([rm(svgPath).catch(() => {}), rm(pngPath).catch(() => {})]);
+
+  // Write new files
+  await writeFile(svgPath, svgTemplate);
+  await sharp(Buffer.from(svgTemplate)).resize(1200, 630).png().toFile(pngPath);
 
   console.log("✨ Generated og-image.svg and og-image.png");
 }

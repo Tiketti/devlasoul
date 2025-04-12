@@ -51,6 +51,10 @@ The OG image automatically reflects the current site title, taglines, and stylin
 
 The site is automatically deployed to Cloudflare Pages on every merge to main.
 
+Node version is set to 22 in Cloudflare Pages using its environment variables:
+
+> Pages > (project) > Settings > Variables and Secrets > `NODE_VERSION=22`.
+
 ### Setup
 
 1. Create a new project in Cloudflare Pages
