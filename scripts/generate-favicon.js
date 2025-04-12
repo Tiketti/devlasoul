@@ -18,15 +18,7 @@ async function main() {
     180,
   );
 
-  // Generate og-image.png
-  await convertSvgToPng(
-    "public/og-image.svg",
-    "public/og-image.png",
-    1200,
-    630,
-  );
-
-  console.log("✨ Generated all images successfully!");
+  console.log("✨ Generated static images successfully!");
 }
 
 main().catch(console.error);

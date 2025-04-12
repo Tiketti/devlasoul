@@ -17,20 +17,35 @@ pnpm build
 
 ## Assets
 
-The site uses SVG source files for favicons and social media images. To generate the PNG versions:
+The site uses two types of image assets:
+
+### Static Images
+SVG source files are used for favicons and device-specific icons. These are generated manually when the favicon changes:
 
 ```sh
-pnpm generate-images
+pnpm generate:favicon
 ```
 
-This will create:
+This creates:
 - `favicon.png` (32x32) - Alternative favicon for browsers that don't support SVG
 - `apple-touch-icon.png` (180x180) - Icon for iOS devices
-- `og-image.png` (1200x630) - Preview image for social media shares
 
-Source files are in `public/`:
-- `favicon.svg` - Source for favicon and apple-touch-icon
-- `og-image.svg` - Source for social media preview image
+Source file: `public/favicon.svg`
+
+> Note: Favicon generation is manual and not part of the build process since these rarely change.
+
+### OpenGraph Image
+The social media preview image is generated dynamically from the site's content:
+
+```sh
+pnpm generate:og
+```
+
+This creates:
+- `og-image.svg` - Vector source with current site content
+- `og-image.png` (1200x630) - Rasterized version for social media
+
+The OG image automatically reflects the current site title, taglines, and styling, and is regenerated with every build.
 
 ## Deployment
 
